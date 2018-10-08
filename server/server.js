@@ -26,6 +26,8 @@ app.listen(PORT, () => {
   console.log("Server is running on %d", PORT);
 });
 
+module.exports = { app };
+
 //Test
 
 //

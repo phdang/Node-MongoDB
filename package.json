@@ -4,7 +4,8 @@
   "description": "Todo Api",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha server/**/*.test.js",
+    "test-watch": "nodemon --exec 'npm test'",
     "dev": "nodemon server/server.js"
   },
   "author": "phDang",
@@ -15,5 +16,10 @@
     "mongodb": "^3.1.6",
     "mongoose": "^5.3.2",
     "nodemon": "^1.18.4"
+  },
+  "devDependencies": {
+    "expect": "^1.20.2",
+    "mocha": "^5.2.0",
+    "supertest": "^3.3.0"
   }
 }
