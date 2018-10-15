@@ -8,6 +8,9 @@
     "test-watch": "nodemon --exec 'npm test'",
     "dev": "nodemon server/server.js"
   },
+  "engines": {
+    "node": "10.9.0"
+  },
   "author": "phDang",
   "license": "ISC",
   "dependencies": {

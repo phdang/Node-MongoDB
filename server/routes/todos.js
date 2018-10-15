@@ -36,13 +36,42 @@ module.exports = app => {
   app.get("/todos/:id", (req, res) => {
     var todoId = req.params.id;
     if (!ObjectID.isValid(todoId)) {
+      console.log("Todo Id is invalid");
       res.status(404).send({ error: "Todo Id not found !" });
+    } else {
+      Todo.findById(todoId)
+        .then(todo => {
+          if (!todo) {
+            console.log("Todo Id is not found");
+
+            res.status(404).send({ error: "Todo Id not found !" });
+          }
+          res.status(200).send({ todo });
+        })
+        .catch(error => {
+          res.status(404).send({ error });
+        });
     }
-    Todo.findById(todoId).then(todo => {
-      if (!todo) {
-        res.status(404).send({ error: "Todo Id not found !" });
-      }
-      res.status(200).send({ todo });
-    });
+  });
+  app.delete("/todos/:id", (req, res) => {
+    var todoId = req.params.id;
+    if (!ObjectID.isValid(todoId)) {
+      console.log("Todo Id is invalid");
+      res.status(404).send({ error: "Todo Id not found !" });
+    } else {
+      Todo.findByIdAndDelete(todoId)
+        .then(todo => {
+          if (!todo) {
+            console.log("Todo Id is not found");
+            res.status(404).send({ error: "Todo Id not found !" });
+          }
+          console.log("To do ", JSON.stringify(todo, null, 2));
+          console.log("Deleted susccessfully");
+          res.status(200).send({ message: "Todo deleted susccessfully" });
+        })
+        .catch(error => {
+          res.status(404).send({ error });
+        });
+    }
   });
 };
