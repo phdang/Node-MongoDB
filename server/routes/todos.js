@@ -19,4 +19,15 @@ module.exports = app => {
       }
     );
   });
+  app.get("/todos", (req, res) => {
+    Todo.find().then(
+      todos => {
+        res.status(200).send({ todos });
+      },
+      error => {
+        console.log(error);
+        res.status(404).send(error);
+      }
+    );
+  });
 };
