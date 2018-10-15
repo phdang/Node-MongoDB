@@ -23,7 +23,7 @@ const PORT = process.env.PORT || 6069;
 const server = https.createServer(app);
 
 app.listen(PORT, () => {
-  console.log("Server is running on port %d", PORT);
+  console.log("Server is running on port %d fantastic yeahhhh !", PORT);
 });
 
 module.exports = { app };

@@ -1,3 +1,5 @@
+const { ObjectID } = require("mongodb");
+
 const { Todo } = require("../models/Todo");
 
 module.exports = app => {
@@ -29,5 +31,18 @@ module.exports = app => {
         res.status(404).send(error);
       }
     );
+  });
+
+  app.get("/todos/:id", (req, res) => {
+    var todoId = req.params.id;
+    if (!ObjectID.isValid(todoId)) {
+      res.status(404).send({ error: "Todo Id not found !" });
+    }
+    Todo.findById(todoId).then(todo => {
+      if (!todo) {
+        res.status(404).send({ error: "Todo Id not found !" });
+      }
+      res.status(200).send({ todo });
+    });
   });
 };
