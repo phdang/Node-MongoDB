@@ -10,7 +10,7 @@ module.exports = app => {
     todo.save().then(
       doc => {
         console.log("Save Todo, ", doc);
-        res.status(201).send({ message: "Todo Saved", Todo: doc });
+        res.status(201).send({ message: "Todo Saved", todo: doc });
       },
       error => {
         console.log("Unable to save Todo ", error);
