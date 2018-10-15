@@ -45,11 +45,13 @@ module.exports = app => {
             console.log("Todo Id is not found");
 
             res.status(404).send({ error: "Todo Id not found !" });
+          } else {
+            res.status(200).send({ todo });
           }
-          res.status(200).send({ todo });
         })
         .catch(error => {
-          res.status(404).send({ error });
+          //res.status(404).send({ error });
+          console.log(error);
         });
     }
   });
@@ -64,10 +66,13 @@ module.exports = app => {
           if (!todo) {
             console.log("Todo Id is not found");
             res.status(404).send({ error: "Todo Id not found !" });
+          } else {
+            console.log("To do ", JSON.stringify(todo, null, 2));
+            console.log("Deleted susccessfully");
+            res
+              .status(200)
+              .send({ todo, message: "Todo deleted susccessfully" });
           }
-          console.log("To do ", JSON.stringify(todo, null, 2));
-          console.log("Deleted susccessfully");
-          res.status(200).send({ message: "Todo deleted susccessfully" });
         })
         .catch(error => {
           res.status(404).send({ error });
