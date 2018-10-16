@@ -4,9 +4,10 @@
   "description": "Todo Api",
   "main": "index.js",
   "scripts": {
-    "test": "mocha server/**/*.test.js",
+    "start": "nodemon server/server.js",
+    "test": "export NODE_ENV=test || SET \"NODE_ENV=test\" && mocha server/**/*.test.js",
     "test-watch": "nodemon --exec 'npm test'",
-    "dev": "nodemon server/server.js"
+    "dev": "export NODE_ENV=development || SET NODE_ENV=development && nodemon server/server.js"
   },
   "engines": {
     "node": "10.9.0"

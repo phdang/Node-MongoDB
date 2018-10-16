@@ -1,3 +1,11 @@
+var env = process.env.NODE_ENV;
+
+if (env === "development") {
+  process.env.PORT = 6069;
+} else if (env === "test") {
+  process.env.PORT = 6069;
+}
+
 //Library imports
 
 const express = require("express");
@@ -18,7 +26,7 @@ app.use(bodyParser.json());
 
 require("./routes/todos")(app);
 
-const PORT = process.env.PORT || 6069;
+const PORT = process.env.PORT;
 
 const server = https.createServer(app);
 
