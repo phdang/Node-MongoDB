@@ -133,7 +133,7 @@ module.exports = app => {
           }
           console.log("Update Todo");
           console.log(JSON.stringify(newUpdate, null, 2));
-          res.status(200).send({ newUpdate });
+          res.status(200).send({ todo: newUpdate });
         });
       })
       .catch(error => {
