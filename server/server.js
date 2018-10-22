@@ -24,7 +24,10 @@ app.use(bodyParser.json());
 
 //Routes
 
+//todos
 require("./routes/todos")(app);
+//users
+require("./routes/users")(app);
 
 const PORT = process.env.PORT;
 
