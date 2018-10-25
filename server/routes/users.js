@@ -2,6 +2,8 @@ const { ObjectID } = require("mongodb");
 
 const { User } = require("../models/User");
 
+const authenticate = require("../middleware/authenticate");
+
 module.exports = app => {
   app.post("/users", (req, res) => {
     var newUser = new User();
@@ -28,5 +30,9 @@ module.exports = app => {
         console.log("Error :", error);
         res.status(400).send(error);
       });
+  });
+
+  app.get("/users/me", authenticate, (req, res) => {
+    res.status(200).send(req.user);
   });
 };
