@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+
 var Schema = mongoose.Schema;
 
 //User
@@ -76,6 +78,21 @@ userSchema.statics.findByToken = function(token) {
     "tokens.access": "auth"
   });
 };
+
+userSchema.pre("save", function(next) {
+  var user = this;
+  if (user.isModified("password")) {
+    bcrypt.genSalt(10, (error, salt) => {
+      bcrypt.hash(user.password, salt, (error, hash) => {
+        user.password = hash;
+        next();
+      });
+    });
+  } else {
+    next();
+  }
+});
+
 var User = mongoose.model("User", userSchema);
 
 module.exports = { User };
