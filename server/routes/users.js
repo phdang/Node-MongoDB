@@ -35,4 +35,19 @@ module.exports = app => {
   app.get("/users/me", authenticate, (req, res) => {
     res.status(200).send(req.user);
   });
+
+  app.post("/users/login", (req, res) => {
+    var email = req.body.email;
+    var password = req.body.password;
+    User.findByCredentials(email, password)
+      .then(user => {
+        return user.generateAuthToken().then(data => {
+          res.header("x-auth", data.token);
+          res.status(200).send(user);
+        });
+      })
+      .catch(error => {
+        res.status(400).send(error);
+      });
+  });
 };
