@@ -35,6 +35,16 @@ module.exports = app => {
   app.get("/users/me", authenticate, (req, res) => {
     res.status(200).send(req.user);
   });
+  app.delete("/users/me/token", authenticate, (req, res) => {
+    req.user.removeToken(req.token).then(
+      () => {
+        res.status(200).send({ message: "log out susccessfully" });
+      },
+      error => {
+        res.status(400).send(error);
+      }
+    );
+  });
 
   app.post("/users/login", (req, res) => {
     var email = req.body.email;

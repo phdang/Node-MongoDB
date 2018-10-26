@@ -5,7 +5,9 @@ const authenticate = (req, res, next) => {
   User.findByToken(token)
     .then(user => {
       if (!user) {
-        return Promise.reject("No user found");
+        return Promise.reject({
+          message: "Token has been expired"
+        });
       }
       req.user = user;
       req.token = token;
