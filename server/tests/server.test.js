@@ -3,27 +3,13 @@ const request = require("supertest");
 const { ObjectID } = require("mongodb");
 
 const { app } = require("../server");
-
+const { User } = require("../models/User");
 const { Todo } = require("../models/Todo");
-const todos = [
-  {
-    _id: new ObjectID(),
-    text: "First text todo"
-  },
-  {
-    _id: new ObjectID(),
-    text: "Second text todo",
-    completed: true,
-    completedAt: new Date().getTime()
-  }
-];
-beforeEach(done => {
-  Todo.deleteMany({})
-    .then(() => {
-      Todo.insertMany(todos);
-    })
-    .then(() => done());
-});
+const { todos, populateTodos, users, populateUsers } = require("./seeds/seeds");
+
+beforeEach(populateUsers);
+
+beforeEach(populateTodos);
 
 describe("POST /todos", () => {
   it("should create a new todo", done => {
@@ -222,6 +208,83 @@ describe("PATCH /todos/:id", () => {
         expect(res.body.todo.completed).toBe(false);
         expect(res.body.todo.completedAt).toNotExist();
       })
+      .end(done);
+  });
+});
+
+describe("GET /users/me", () => {
+  it("should return user if authenticated", done => {
+    request(app)
+      .get("/users/me")
+      .set("x-auth", users[0].tokens[0].token)
+      .expect(200)
+      .expect(res => {
+        expect(res.body._id).toBe(users[0]._id.toHexString());
+        expect(res.body.email).toBe(users[0].email);
+      })
+      .end(done);
+  });
+
+  it("should return 401 status if user is not autheticated JWT message", done => {
+    request(app)
+      .get("/users/me")
+      .expect(401)
+      .expect(res => {
+        expect(res.body.message).toBe("jwt must be provided");
+      })
+      .end(done);
+  });
+
+  it("should return 401 status if user is not autheticated and malformed token message", done => {
+    request(app)
+      .get("/users/me")
+      .set("x-auth", "1234")
+      .expect(401)
+      .expect(res => {
+        expect(res.body.message).toBe("jwt malformed");
+      })
+      .end(done);
+  });
+});
+
+describe("POST /users", () => {
+  it("should create a user", done => {
+    const email = "example@gmail.com";
+    const password = "123456abc";
+    request(app)
+      .post("/users")
+      .send({ email, password })
+      .expect(201)
+      .expect(res => {
+        expect(res.headers["x-auth"]).toExist();
+        expect(res.body._id).toExist();
+        expect(res.body.email).toBe(email);
+      })
+      .end(error => {
+        if (error) {
+          return done(error);
+        }
+        User.findOne({ email }).then(user => {
+          expect(user).toExist();
+          expect(user.password).toNotBe(password);
+          done();
+        });
+      });
+  });
+
+  it("should return a validation error if a request invalid", done => {
+    request(app)
+      .post("/users")
+      .send({ email: "example", password: "12345" })
+      .expect(400)
+      .end(done);
+  });
+
+  it("should not create a user if email has been taken already", done => {
+    request(app)
+      .post("/users")
+      .send({ email: users[0].email, password: users[0].password })
+      .expect(400)
       .end(done);
   });
 });
