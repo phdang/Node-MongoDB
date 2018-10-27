@@ -4,13 +4,13 @@ var env = process.env.NODE_ENV;
 
 if (env === "development") {
   mongoose.connect(
-    "mongodb://localhost:27017/TodoApp",
+    process.env.MONGODB_URI,
     { useCreateIndex: true, useNewUrlParser: true }
   );
   mongoose.set("useFindAndModify", false);
 } else if (env === "test") {
   mongoose.connect(
-    "mongodb://localhost:27017/TodoAppTest",
+    process.env.MONGODB_URI,
     { useCreateIndex: true, useNewUrlParser: true }
   );
   mongoose.set("useFindAndModify", false);

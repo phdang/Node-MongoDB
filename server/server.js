@@ -1,10 +1,6 @@
-var env = process.env.NODE_ENV;
+// import config
 
-if (env === "development") {
-  process.env.PORT = 6069;
-} else if (env === "test") {
-  process.env.PORT = 6069;
-}
+require("./config/config");
 
 //Library imports
 
