@@ -1,13 +1,16 @@
 const _ = require("lodash");
 
+const authenticate = require("../middleware/authenticate");
+
 const { ObjectID } = require("mongodb");
 
 const { Todo } = require("../models/Todo");
 
 module.exports = app => {
-  app.post("/todos", (req, res) => {
+  app.post("/todos", authenticate, (req, res) => {
     var todo = new Todo({
-      text: req.body.text
+      text: req.body.text,
+      _creator: req.user._id
     });
     todo.save().then(
       doc => {
@@ -23,8 +26,8 @@ module.exports = app => {
       }
     );
   });
-  app.get("/todos", (req, res) => {
-    Todo.find().then(
+  app.get("/todos", authenticate, (req, res) => {
+    Todo.find({ _creator: req.user._id }).then(
       todos => {
         res.status(200).send({ todos });
       },
@@ -35,13 +38,13 @@ module.exports = app => {
     );
   });
 
-  app.get("/todos/:id", (req, res) => {
+  app.get("/todos/:id", authenticate, (req, res) => {
     var todoId = req.params.id;
     if (!ObjectID.isValid(todoId)) {
       console.log("Todo Id is invalid");
       res.status(404).send({ error: "Todo Id not found !" });
     } else {
-      Todo.findById(todoId)
+      Todo.findOne({ _id: todoId, _creator: req.user._id })
         .then(todo => {
           if (!todo) {
             console.log("Todo Id is not found");
@@ -57,13 +60,13 @@ module.exports = app => {
         });
     }
   });
-  app.delete("/todos/:id", (req, res) => {
+  app.delete("/todos/:id", authenticate, (req, res) => {
     var todoId = req.params.id;
     if (!ObjectID.isValid(todoId)) {
       console.log("Todo Id is invalid");
       res.status(404).send({ error: "Todo Id not found !" });
     } else {
-      Todo.findByIdAndDelete(todoId)
+      Todo.findOneAndDelete({ _id: todoId, _creator: req.user._id })
         .then(todo => {
           if (!todo) {
             console.log("Todo Id is not found");
@@ -81,7 +84,7 @@ module.exports = app => {
         });
     }
   });
-  app.patch("/todos/:id", (req, res) => {
+  app.patch("/todos/:id", authenticate, (req, res) => {
     var todoId = req.params.id;
 
     // first solution using lodash
@@ -124,8 +127,11 @@ module.exports = app => {
     } else {
       newTodo.completedAt = null;
     }
-    Todo.findById(todoId)
+    Todo.findOne({ _id: todoId, _creator: req.user._id })
       .then(todo => {
+        if (!todo) {
+          res.status(404).send({ error: "Unauthorised to update to do" });
+        }
         todo.set(newTodo);
         todo.save((error, newUpdate) => {
           if (error) {
